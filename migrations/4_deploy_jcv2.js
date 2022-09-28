@@ -2,13 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const some = require("lodash/some");
 
-const FiatTokenV2 = artifacts.require("FiatTokenV2");
+const JunoCoinV2 = artifacts.require("JunoCoinV2");
 const FiatTokenProxy = artifacts.require("FiatTokenProxy");
-const FiatTokenUtil = artifacts.require("FiatTokenUtil");
-
-const THROWAWAY_ADDRESS = "0x0000000000000000000000000000000000000001";
 
 let proxyContractAddress = "";
+
+const THROWAWAY_ADDRESS = "0x0000000000000000000000000000000000000001";
 
 // Read config file if it exists
 if (fs.existsSync(path.join(__dirname, "..", "config.js"))) {
@@ -25,15 +24,15 @@ module.exports = async (deployer, network) => {
 
   console.log(`FiatTokenProxy: ${proxyContractAddress}`);
 
-  console.log("Deploying FiatTokenV2 implementation contract...");
-  await deployer.deploy(FiatTokenV2);
+  console.log("Deploying JunoCoinV2 implementation contract...");
+  await deployer.deploy(JunoCoinV2);
 
-  const fiatTokenV2 = await FiatTokenV2.deployed();
-  console.log("Deployed FiatTokenV2 at", fiatTokenV2.address);
+  const jcv2 = await JunoCoinV2.deployed();
+  console.log("Deployed JunoCoinV2 at", jcv2.address);
   console.log(
-    "Initializing FiatTokenV2 implementation contract with dummy values..."
+    "Initializing JunoCoinV2 implementation contract with dummy values..."
   );
-  await fiatTokenV2.initialize(
+  await jcv2.initialize(
     "",
     "",
     "",
@@ -43,12 +42,7 @@ module.exports = async (deployer, network) => {
     THROWAWAY_ADDRESS,
     THROWAWAY_ADDRESS
   );
-  await fiatTokenV2.initializeV2("");
-
-  console.log("Deploying FiatTokenUtil contract...");
-  const fiatTokenUtil = await deployer.deploy(
-    FiatTokenUtil,
-    proxyContractAddress
-  );
-  console.log("Deployed FiatTokenUtil at", fiatTokenUtil.address);
+  await jcv2.initializeV2("");
+  await jcv2.initializeV2_1(THROWAWAY_ADDRESS);
+  await jcv2.initializeJCV2();
 };
